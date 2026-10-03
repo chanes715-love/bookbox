@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>書箱資源查詢系統</title>
+    <!-- 使用 Tailwind CSS 進行樣式設計 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 使用 FontAwesome 載入圖示 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts 選擇具有書卷氣息的字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: #f4ece4; /* 溫暖的紙張/木質背景色 */
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); /* 輕微的木質紋理 (可選) */
+        }
+
+        /* 書櫃主體樣式 */
+        .bookshelf-container {
+            background-color: #8B5A2B; /* 深木色 */
+            border: 12px solid #5C3A21;
+            border-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3);
+            position: relative;
+            padding: 20px 10px;
+        }
+
+        /* 層板樣式 */
+        .shelf {
+            border-bottom: 25px solid #5C3A21;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            position: relative;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 10px -5px rgba(0,0,0,0.4);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-end;
+            padding: 0 15px 5px 15px;
+            min-height: 180px; /* 確保沒有書時也有層板高度 */
+        }
+        
+        .shelf::after {
+            content: '';
+            position: absolute;
+            bottom: -25px;
+            left: -15px;
+            right: -15px;
+            height: 5px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* 書籍(書箱項目)樣式 */
+        .book-item {
+            width: 100%;
+            max-width: 320px;
+            margin: 10px;
+            background-color: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: -3px 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            /* 模擬書背的外觀 */
+            border-left: 15px solid #d4c0a8; 
+            z-index: 10;
+        }
+
+        .book-item:hover {
+            transform: translateY(-10px) rotate(1deg);
+            box-shadow: -5px 15px 20px rgba(0,0,0,0.4);
+            z-index: 20;
+        }
+
+        /* 書籍顏色的隨機感 */
+        .book-item:nth-child(4n+1) { border-left-color: #4A6572; } /* 藍灰 */
+        .book-item:nth-child(4n+2) { border-left-color: #8C4331; } /* 紅褐 */
+        .book-item:nth-child(4n+3) { border-left-color: #5D7052; } /* 綠色 */
+        .book-item:nth-child(4n+4) { border-left-color: #D9A05B; } /* 金黃 */
+
+        /* 讀取動畫 */
+        .loader {
+            border-top-color: #8B5A2B;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 自訂捲軸 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8B5A2B; 
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5C3A21; 
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+
+    <!-- 標題區塊 -->
+    <header class="text-center mb-8 w-full max-w-4xl">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2 tracking-wider" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+            <i class="fa-solid fa-book-open-reader text-yellow-700 mr-3"></i>圖書書箱資源庫
+        </h1>
+        <p class="text-gray-600 text-lg">輸入書箱名稱或登錄號來尋找您需要的資源</p>
+    </header>
+
+    <!-- 搜尋列區塊 -->
+    <div class="w-full max-w-2xl mb-12 relative z-30">
+        <form id="searchForm" class="relative flex items-center shadow-lg rounded-full overflow-hidden bg-white border-2 border-yellow-800/20">
+            <div class="pl-5 text-gray-400">
+                <i class="fa-solid fa-magnifying-glass text-xl"></i>
+            </div>
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="例如：BOX00001 或 加油雞蛋哥哥" 
+                class="w-full py-4 px-4 text-lg text-gray-700 outline-none placeholder-gray-400 font-sans"
+            >
+            <button 
+                type="submit" 
+                class="bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-4 px-8 transition duration-300 ease-in-out focus:outline-none"
+            >
+                查詢
+            </button>
+        </form>
+    </div>
+
+    <!-- 載入中指示器 -->
+    <div id="loadingIndicator" class="hidden flex-col items-center justify-center my-8">
+        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-16 w-16 mb-4"></div>
+        <h2 class="text-center text-xl font-semibold text-gray-700">正在翻找書櫃中...</h2>
+    </div>
+
+    <!-- 結果訊息提示 -->
+    <div id="resultMessage" class="text-center text-xl text-gray-700 font-semibold mb-6 hidden w-full"></div>
+
+    <!-- 書櫃展示區 -->
+    <div id="bookshelfContainer" class="w-full max-w-6xl bookshelf-container hidden">
+        <!-- 層板將由 JavaScript 動態生成 -->
+    </div>
+
+    <!-- 分頁控制區 -->
+    <div id="paginationContainer" class="w-full max-w-4xl flex justify-center items-center mt-8 mb-12 hidden space-x-4">
+        <button id="prevBtn" class="bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-2 px-6 rounded shadow disabled:opacity-50 disabled:cursor-not-allowed transition duration-300">
+            <i class="fa-solid fa-chevron-left mr-2"></i>上一頁
+        </button>
+        <span id="pageIndicator" class="text-gray-700 font-semibold text-lg">第 1 頁 / 共 1 頁</span>
+        <button id="nextBtn" class="bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-2 px-6 rounded shadow disabled:opacity-50 disabled:cursor-not-allowed transition duration-300">
+            下一頁<i class="fa-solid fa-chevron-right ml-2"></i>
+        </button>
+    </div>
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        // ==========================================
+        // ★★★ 請將下方的網址替換為您的 GAS 網頁應用程式網址 ★★★
+        // ==========================================
+        const GAS_URL = '請貼上您的_GAS_Web_App_URL'; 
+        
+        // DOM 元素
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const bookshelfContainer = document.getElementById('bookshelfContainer');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultMessage = document.getElementById('resultMessage');
+        const paginationContainer = document.getElementById('paginationContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageIndicator = document.getElementById('pageIndicator');
+
+        // 分頁與資料狀態
+        let allResults = [];
+        let currentPage = 1;
+        const itemsPerPage = 10; // 每頁顯示 10 本書
+        let currentQuery = '';
+
+        // 監聽表單提交事件
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // 防止頁面重新載入
+            const query = searchInput.value.trim();
+            
+            if (GAS_URL === '請貼上您的_GAS_Web_App_URL') {
+                showError('請先在 HTML 原始碼中設定 GAS_URL');
+                return;
+            }
+
+            fetchData(query);
+        });
+
+        // 監聽分頁按鈕 - 上一頁
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPage();
+            }
+        });
+
+        // 監聽分頁按鈕 - 下一頁
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(allResults.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPage();
+            }
+        });
+
+        /**
+         * 隨機打亂陣列 (Fisher-Yates Shuffle 演算法)
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        /**
+         * 向 GAS API 發送請求獲取資料
+         * @param {string} query 搜尋關鍵字
+         */
+        async function fetchData(query) {
+            // UI 狀態切換：顯示載入中，隱藏結果與分頁
+            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.classList.add('flex');
+            bookshelfContainer.classList.add('hidden');
+            resultMessage.classList.add('hidden');
+            paginationContainer.classList.add('hidden');
+            bookshelfContainer.innerHTML = ''; // 清空先前的結果
+
+            currentQuery = query;
+
+            // 建立 API URL，附帶搜尋參數
+            const url = `${GAS_URL}?action=search&query=${encodeURIComponent(query)}`;
+
+            try {
+                // 發送 GET 請求
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+
+                // 處理回應資料
+                if (result.status === 'success') {
+                    allResults = result.data;
+                    
+                    // 若是空查詢（一開始載入），則自動隨機打亂所有資料
+                    if (query === '') {
+                        shuffleArray(allResults);
+                    }
+
+                    currentPage = 1; // 重置頁碼為第 1 頁
+                    renderPage();
+                } else {
+                    throw new Error(result.message || 'API 發生錯誤');
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                showError('讀取資料失敗，請確認您的 GAS 網址是否正確，且已部署完成。詳細錯誤：' + error.message);
+            } finally {
+                // 隱藏載入中
+                loadingIndicator.classList.add('hidden');
+                loadingIndicator.classList.remove('flex');
+            }
+        }
+
+        /**
+         * 渲染當前頁面的資料 (含分頁邏輯)
+         */
+        function renderPage() {
+            bookshelfContainer.innerHTML = ''; // 清空書櫃
+            
+            if (allResults.length === 0) {
+                resultMessage.textContent = currentQuery ? `找不到包含「${currentQuery}」的書箱。` : '目前沒有任何書箱資料。';
+                resultMessage.classList.remove('hidden');
+                bookshelfContainer.classList.add('hidden');
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+
+            // 計算分頁的開始與結束索引
+            const totalPages = Math.ceil(allResults.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = allResults.slice(startIndex, endIndex); // 擷取當前頁的 10 筆資料
+
+            // 更新上方的訊息文字
+            if (currentQuery) {
+                resultMessage.textContent = `找到 ${allResults.length} 個符合「${currentQuery}」的書箱 (顯示第 ${startIndex + 1}-${Math.min(endIndex, allResults.length)} 筆)：`;
+            } else {
+                resultMessage.textContent = `為您隨機推薦書箱 (共 ${allResults.length} 箱，顯示第 ${startIndex + 1}-${Math.min(endIndex, allResults.length)} 筆)：`;
+            }
+            resultMessage.classList.remove('hidden');
+            bookshelfContainer.classList.remove('hidden');
+
+            // 顯示與更新分頁控制區的狀態
+            if (totalPages > 1) {
+                paginationContainer.classList.remove('hidden');
+                pageIndicator.textContent = `第 ${currentPage} 頁 / 共 ${totalPages} 頁`;
+                prevBtn.disabled = currentPage === 1;
+                nextBtn.disabled = currentPage === totalPages;
+            } else {
+                paginationContainer.classList.add('hidden'); // 若只有一頁則隱藏分頁列
+            }
+
+            // 渲染書櫃 (每層 3 本書的版面設計不變)
+            const itemsPerShelf = 3; 
+            let currentShelf = null;
+
+            pageData.forEach((item, index) => {
+                // 每 n 本書建立一個新的層板
+                if (index % itemsPerShelf === 0) {
+                    currentShelf = document.createElement('div');
+                    currentShelf.className = 'shelf';
+                    bookshelfContainer.appendChild(currentShelf);
+                }
+
+                // 建立書本 DOM
+                const bookCard = createBookCard(item);
+                currentShelf.appendChild(bookCard);
+            });
+        }
+
+        /**
+         * 建立單個書箱的卡片 DOM
+         * @param {Object} item 書箱資料物件
+         * @returns {HTMLElement} 書本卡片元素
+         */
+        function createBookCard(item) {
+            const card = document.createElement('div');
+            card.className = 'book-item flex flex-col justify-between';
+
+            // 處理說明文字，若無則顯示預設
+            const noteText = (item.note && item.note.trim() !== "") ? item.note : "無特別說明";
+            
+            // 處理描述連結
+            let linkHtml = '<span class="text-gray-400 italic text-sm">無連結</span>';
+            if (item.descriptionLink && item.descriptionLink.trim() !== "") {
+                linkHtml = `<a href="${item.descriptionLink}" target="_blank" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors font-sans text-sm bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-100">
+                                <i class="fa-solid fa-link mr-1"></i> 前往資源
+                            </a>`;
+            }
+
+            // 內部 HTML 結構
+            card.innerHTML = `
+                <div class="p-5 flex-grow">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded border border-yellow-300 font-sans tracking-widest">
+                            <i class="fa-solid fa-hashtag mr-1 text-gray-500"></i>${item.id}
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mt-2 mb-3 leading-tight line-clamp-2" title="${item.name}">${item.name}</h3>
+                    
+                    <div class="text-sm text-gray-600 mb-4 bg-gray-50 p-3 rounded border border-gray-100 h-20 overflow-y-auto font-sans">
+                        <span class="font-semibold text-gray-500 block mb-1">說明：</span>
+                        ${noteText}
+                    </div>
+                </div>
+                
+                <div class="bg-gray-100 p-4 border-t border-gray-200 flex justify-between items-center">
+                    ${linkHtml}
+                    <button onclick="copyToClipboard('${item.id}')" class="text-gray-500 hover:text-gray-800 p-2 rounded-full hover:bg-gray-200 transition-colors" title="複製登錄號">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        /**
+         * 顯示錯誤訊息
+         */
+        function showError(msg) {
+            resultMessage.textContent = msg;
+            resultMessage.classList.remove('hidden');
+            resultMessage.classList.add('text-red-600'); // 變更顏色為紅色
+            bookshelfContainer.classList.add('hidden');
+            paginationContainer.classList.add('hidden'); // 發生錯誤時隱藏分頁
+        }
+
+        /**
+         * 複製文字到剪貼簿
+         */
+        function copyToClipboard(text) {
+            // 使用較舊但也較廣泛支援的方法 (因 iFrame 限制可能無法使用 navigator.clipboard)
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            
+            // 避免網頁滾動
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if(successful) {
+                    // 可以加入一個簡易的提示效果，這裡使用改變文字顏色代替 alert
+                    const originalText = resultMessage.textContent;
+                    resultMessage.innerHTML = `<span class="text-green-600"><i class="fa-solid fa-check mr-2"></i>已複製登錄號: ${text}</span>`;
+                    resultMessage.classList.remove('hidden');
+                    setTimeout(() => {
+                         resultMessage.textContent = originalText;
+                    }, 2000);
+                } else {
+                    console.error('Fallback: Oops, unable to copy');
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        // 頁面載入時自動執行一次空查詢，列出所有書箱
+        window.addEventListener('DOMContentLoaded', () => {
+            if (GAS_URL !== '請貼上您的_GAS_Web_App_URL') {
+                fetchData('');
+            } else {
+                 resultMessage.innerHTML = `<span class="text-red-500"><i class="fa-solid fa-triangle-exclamation mr-2"></i>請先在程式碼中設定 GAS 網址 (GAS_URL)</span>`;
+                 resultMessage.classList.remove('hidden');
+            }
+        });
+
+    </script>
+</body>
+</html>
