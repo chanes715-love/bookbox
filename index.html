@@ -3,33 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>書箱資源查詢系統</title>
+    <title>書箱資源查詢系統 - Book World</title>
     <!-- 使用 Tailwind CSS 進行樣式設計 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 使用 FontAwesome 載入圖示 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts 選擇具有書卷氣息的字體 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+    <!-- 引入圓潤的英文字體與中文無襯線體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Noto Serif TC', serif;
-            background-color: #f4ece4; /* 溫暖的紙張/木質背景色 */
-            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); /* 輕微的木質紋理 (可選) */
+            /* 綜合英中字體，優先使用圓潤字體 */
+            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+            background-color: #BDE4B3; /* 對應圖片的淺綠色背景 */
+            position: relative;
+            overflow-x: hidden; /* 防止背景裝飾溢出 */
+            color: #3B5A3E; /* 預設文字為深綠色 */
         }
 
-        /* 書櫃主體樣式 */
+        /* 模擬圖片中的背景裝飾元素 */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            z-index: -1;
+        }
+        
+        body::before {
+            /* 左上角的不規則形狀 */
+            top: -50px;
+            left: -50px;
+            width: 300px;
+            height: 300px;
+            background-color: #A3D299;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            transform: rotate(-20deg);
+        }
+
+        body::after {
+            /* 右下角的幾何形狀 */
+            bottom: -100px;
+            right: -50px;
+            width: 400px;
+            height: 350px;
+            background-color: #A3D299;
+            clip-path: polygon(0 40%, 100% 0, 100% 100%, 30% 100%);
+            opacity: 0.7;
+        }
+
+        /* 標題字體，使用特粗且圓潤的風格 */
+        .title-text {
+            font-family: 'Fredoka One', 'Noto Sans TC', cursive;
+            color: #4A7A44; /* 深綠色主標題 */
+            line-height: 0.9;
+            text-transform: lowercase; /* 模擬原圖的 lowercase 感覺 */
+        }
+
+        .subtitle-text {
+            color: #5C8C56;
+            font-weight: 700;
+        }
+
         .bookshelf-container {
-            background-color: #8B5A2B; /* 深木色 */
-            border: 12px solid #5C3A21;
-            border-radius: 8px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3);
+            /* 將木櫃顏色改為較柔和、搭配綠色的原木色或深綠色系 */
+            background-color: #7B5F42; 
+            border: 12px solid #5C452F;
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3), 0 15px 30px rgba(74, 122, 68, 0.4);
             position: relative;
             padding: 20px 10px;
         }
 
-        /* 層板樣式 */
         .shelf {
-            border-bottom: 25px solid #5C3A21;
+            border-bottom: 25px solid #5C452F;
             border-left: 15px solid transparent;
             border-right: 15px solid transparent;
             position: relative;
@@ -40,7 +84,7 @@
             justify-content: flex-start;
             align-items: flex-end;
             padding: 0 15px 5px 15px;
-            min-height: 180px; /* 確保沒有書時也有層板高度 */
+            min-height: 180px; 
         }
         
         .shelf::after {
@@ -50,196 +94,152 @@
             left: -15px;
             right: -15px;
             height: 5px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
         }
 
-        /* 書籍(書箱項目)樣式 */
         .book-item {
             width: 100%;
             max-width: 320px;
             margin: 10px;
-            background-color: #fff;
-            border-radius: 4px;
+            background-color: #FFFAED; /* 米白色書頁感 */
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: -3px 5px 15px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: -4px 6px 12px rgba(0,0,0,0.25);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
             position: relative;
-            /* 模擬書背的外觀 */
-            border-left: 15px solid #d4c0a8; 
+            border-left: 18px solid #F4C430; /* 預設書背顏色 */
             z-index: 10;
         }
 
         .book-item:hover {
-            transform: translateY(-10px) rotate(1deg);
-            box-shadow: -5px 15px 20px rgba(0,0,0,0.4);
+            transform: translateY(-15px) rotate(2deg);
+            box-shadow: -8px 20px 25px rgba(0,0,0,0.3);
             z-index: 20;
         }
 
-        /* 書籍顏色的隨機感 */
-        .book-item:nth-child(4n+1) { border-left-color: #4A6572; } /* 藍灰 */
-        .book-item:nth-child(4n+2) { border-left-color: #8C4331; } /* 紅褐 */
-        .book-item:nth-child(4n+3) { border-left-color: #5D7052; } /* 綠色 */
-        .book-item:nth-child(4n+4) { border-left-color: #D9A05B; } /* 金黃 */
+        /* 根據圖片色彩設定書籍書背顏色循環 (黃, 綠, 藍, 紅) */
+        .book-item:nth-child(4n+1) { border-left-color: #F7B733; } /* 圖片中的黃色 */
+        .book-item:nth-child(4n+2) { border-left-color: #6C9A64; } /* 圖片中的綠色 */
+        .book-item:nth-child(4n+3) { border-left-color: #4B74B5; } /* 圖片中的藍色 */
+        .book-item:nth-child(4n+4) { border-left-color: #CC4B40; } /* 圖片中的紅色 */
 
-        /* 讀取動畫 */
+        /* 其他介面元素微調 */
+        .search-input:focus {
+            outline: 3px solid #F7B733;
+        }
+
+        .primary-btn {
+            background-color: #F7B733; /* 主按鈕使用圖片黃色 */
+            color: #4A7A44;
+        }
+        .primary-btn:hover {
+            background-color: #FFC953;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(247, 183, 51, 0.4);
+        }
+
+        /* 讀取動畫 (改為綠色系) */
         .loader {
-            border-top-color: #8B5A2B;
-            -webkit-animation: spinner 1.5s linear infinite;
-            animation: spinner 1.5s linear infinite;
+            border-top-color: #4A7A44;
+            -webkit-animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         }
         @keyframes spinner {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* 自訂捲軸 */
+        /* 塗鴉小裝飾 (使用 CSS 繪製簡單線條) */
+        .doodle {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .doodle-1 { top: 15%; left: 10%; width: 50px; height: 50px; border-bottom: 4px solid #7EAD73; border-right: 4px solid transparent; border-radius: 50%; transform: rotate(30deg); }
+        .doodle-2 { top: 70%; left: 5%; width: 60px; height: 20px; border-top: 4px wavy #7EAD73; }
+        .doodle-3 { top: 20%; right: 25%; width: 40px; height: 40px; border: 4px solid #7EAD73; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+        
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 12px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
+            background: #D5EFCE; 
         }
         ::-webkit-scrollbar-thumb {
-            background: #8B5A2B; 
-            border-radius: 5px;
+            background: #8EBA84; 
+            border-radius: 6px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #5C3A21; 
+            background: #6C9A64; 
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center relative">
+    
+    <!-- 裝飾用塗鴉 -->
+    <div class="doodle doodle-1"></div>
+    <div class="doodle doodle-3"></div>
 
-    <!-- 標題區塊 -->
-    <header class="text-center mb-8 w-full max-w-4xl">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2 tracking-wider" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
-            <i class="fa-solid fa-book-open-reader text-yellow-700 mr-3"></i>圖書書箱資源庫
+    <header class="text-left mb-10 w-full max-w-5xl pl-4 md:pl-10 mt-8 relative z-10">
+        <h1 class="title-text text-6xl md:text-8xl font-black mb-1 drop-shadow-md">
+            book<br>world
         </h1>
-        <p class="text-gray-600 text-lg">輸入書箱名稱或登錄號來尋找您需要的資源</p>
+        <p class="subtitle-text text-xl md:text-2xl mt-2 tracking-wide font-bold">Read, Learn, Grow</p>
     </header>
 
-    <!-- 搜尋列區塊 -->
-    <div class="w-full max-w-2xl mb-12 relative z-30">
-        <form id="searchForm" class="relative flex items-center shadow-lg rounded-full overflow-hidden bg-white border-2 border-yellow-800/20">
-            <div class="pl-5 text-gray-400">
-                <i class="fa-solid fa-magnifying-glass text-xl"></i>
+    <div class="w-full max-w-3xl mb-12 relative z-30">
+        <form id="searchForm" class="relative flex items-center shadow-xl rounded-full overflow-hidden bg-white border-4 border-white focus-within:border-[#F7B733] transition-colors duration-300">
+            <div class="pl-6 text-[#8EBA84]">
+                <i class="fa-solid fa-magnifying-glass text-2xl"></i>
             </div>
             <input 
                 type="text" 
                 id="searchInput" 
-                placeholder="例如：BOX00001 或 加油雞蛋哥哥" 
-                class="w-full py-4 px-4 text-lg text-gray-700 outline-none placeholder-gray-400 font-sans"
+                placeholder="輸入書箱登錄號 或 關鍵字..." 
+                class="w-full py-5 px-5 text-xl text-[#3B5A3E] font-bold outline-none placeholder-[#A3D299] search-input bg-transparent"
             >
             <button 
                 type="submit" 
-                class="bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-4 px-8 transition duration-300 ease-in-out focus:outline-none"
+                class="primary-btn font-black text-xl py-5 px-10 transition duration-300 ease-in-out focus:outline-none uppercase tracking-wider"
             >
-                查詢
+                Search
             </button>
         </form>
     </div>
 
     <!-- 載入中指示器 -->
     <div id="loadingIndicator" class="hidden flex-col items-center justify-center my-8">
-        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-16 w-16 mb-4"></div>
-        <h2 class="text-center text-xl font-semibold text-gray-700">正在翻找書櫃中...</h2>
+        <div class="loader ease-linear rounded-full border-8 border-t-8 border-[#BDE4B3] h-20 w-20 mb-4 shadow-lg"></div>
+        <h2 class="text-center text-2xl font-black text-[#4A7A44]">Searching...</h2>
     </div>
 
     <!-- 結果訊息提示 -->
-    <div id="resultMessage" class="text-center text-xl text-gray-700 font-semibold mb-6 hidden w-full"></div>
+    <div id="resultMessage" class="text-center text-xl md:text-2xl text-[#4A7A44] font-bold mb-6 hidden w-full px-4 drop-shadow-sm"></div>
 
     <!-- 書櫃展示區 -->
-    <div id="bookshelfContainer" class="w-full max-w-6xl bookshelf-container hidden">
+    <div id="bookshelfContainer" class="w-full max-w-6xl bookshelf-container hidden z-20">
         <!-- 層板將由 JavaScript 動態生成 -->
     </div>
 
     <!-- 分頁控制區 -->
-    <div id="paginationContainer" class="w-full max-w-4xl flex justify-center items-center mt-8 mb-12 hidden space-x-4">
-        <button id="prevBtn" class="bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-2 px-6 rounded shadow disabled:opacity-50 disabled:cursor-not-allowed transition duration-300">
-            <i class="fa-solid fa-chevron-left mr-2"></i>上一頁
+    <div id="paginationContainer" class="w-full max-w-4xl flex justify-center items-center mt-12 mb-16 hidden space-x-6 z-20">
+        <button id="prevBtn" class="bg-[#CC4B40] hover:bg-[#A83D33] text-white font-bold py-3 px-8 rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 transform hover:-translate-y-1">
+            <i class="fa-solid fa-chevron-left mr-2"></i> 上一頁
         </button>
-        <span id="pageIndicator" class="text-gray-700 font-semibold text-lg">第 1 頁 / 共 1 頁</span>
-        <button id="nextBtn" class="bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-2 px-6 rounded shadow disabled:opacity-50 disabled:cursor-not-allowed transition duration-300">
-            下一頁<i class="fa-solid fa-chevron-right ml-2"></i>
+        <span id="pageIndicator" class="text-[#4A7A44] font-black text-xl bg-white/60 px-6 py-2 rounded-full shadow-sm">第 1 頁 / 共 1 頁</span>
+        <button id="nextBtn" class="bg-[#4B74B5] hover:bg-[#3B5B8E] text-white font-bold py-3 px-8 rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 transform hover:-translate-y-1">
+            下一頁 <i class="fa-solid fa-chevron-right ml-2"></i>
         </button>
     </div>
 
-    <!-- JavaScript 邏輯 -->
+    <!-- JavaScript 邏輯 (大部分維持，僅修改生成的卡片樣式) -->
     <script>
         // ==========================================
         // ★★★ 請將下方的網址替換為您的 GAS 網頁應用程式網址 ★★★
         // ==========================================
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbx5l9n76CWj_itIFSEkuQKs2rLjZt3kVvalJ_GfaUkS7LJmy664Ie8mtFYQ314YLpWh/exec'; 
         
-        // DOM 元素
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = document.getElementById('searchInput');
-        const bookshelfContainer = document.getElementById('bookshelfContainer');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const resultMessage = document.getElementById('resultMessage');
-        const paginationContainer = document.getElementById('paginationContainer');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const pageIndicator = document.getElementById('pageIndicator');
-
-        // 分頁與資料狀態
-        let allResults = [];
-        let currentPage = 1;
-        const itemsPerPage = 10; // 每頁顯示 10 本書
-        let currentQuery = '';
-
-        // 監聽表單提交事件
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // 防止頁面重新載入
-            const query = searchInput.value.trim();
-            
-            if (GAS_URL === '請貼上您的_GAS_Web_App_URL') {
-                showError('請先在 HTML 原始碼中設定 GAS_URL');
-                return;
-            }
-
-            fetchData(query);
-        });
-
-        // 監聽分頁按鈕 - 上一頁
-        prevBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderPage();
-            }
-        });
-
-        // 監聽分頁按鈕 - 下一頁
-        nextBtn.addEventListener('click', () => {
-            const totalPages = Math.ceil(allResults.length / itemsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderPage();
-            }
-        });
-
-        /**
-         * 隨機打亂陣列 (Fisher-Yates Shuffle 演算法)
-         */
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        /**
-         * 向 GAS API 發送請求獲取資料
-         * @param {string} query 搜尋關鍵字
-         */
-        async function fetchData(query) {
-            // UI 狀態切換：顯示載入中，隱藏結果與分頁
-            loadingIndicator.classList.remove('hidden');
-            loadingIndicator.classList.add('flex');
-            bookshelfContainer.classList.add('hidden');
-            resultMessage.classList.add('hidden');
-            paginationContainer.classList.add('hidden');
-            bookshelfContainer.innerHTML = ''; // 清空先前的結果
+        // DOM 元素宣告
 
             currentQuery = query;
 
@@ -269,17 +269,17 @@
                     throw new Error(result.message || 'API 發生錯誤');
                 }
             } catch (error) {
-                console.error("Fetch Error:", error);
-                showError('讀取資料失敗，請確認您的 GAS 網址是否正確，且已部署完成。詳細錯誤：' + error.message);
-            } finally {
-                // 隱藏載入中
-                loadingIndicator.classList.add('hidden');
-                loadingIndicator.classList.remove('flex');
+        // 監聽分頁按鈕 - 下一頁
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(allResults.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPage();
             }
-        }
+        });
 
         /**
-         * 渲染當前頁面的資料 (含分頁邏輯)
+         * 隨機打亂陣列 (Fisher-Yates Shuffle 演算法)
          */
         function renderPage() {
             bookshelfContainer.innerHTML = ''; // 清空書櫃
@@ -336,45 +336,42 @@
         }
 
         /**
-         * 建立單個書箱的卡片 DOM
-         * @param {Object} item 書箱資料物件
-         * @returns {HTMLElement} 書本卡片元素
+         * 建立單個書箱的卡片 DOM (更新風格)
          */
         function createBookCard(item) {
             const card = document.createElement('div');
             card.className = 'book-item flex flex-col justify-between';
 
-            // 處理說明文字，若無則顯示預設
+            // 處理說明文字
             const noteText = (item.note && item.note.trim() !== "") ? item.note : "無特別說明";
             
-            // 處理描述連結
-            let linkHtml = '<span class="text-gray-400 italic text-sm">無連結</span>';
+            // 處理描述連結按鈕，採用圓潤風格
+            let linkHtml = '<span class="text-gray-400 font-bold text-sm bg-gray-100 px-3 py-1 rounded-full">無連結</span>';
             if (item.descriptionLink && item.descriptionLink.trim() !== "") {
-                linkHtml = `<a href="${item.descriptionLink}" target="_blank" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors font-sans text-sm bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-100">
-                                <i class="fa-solid fa-link mr-1"></i> 前往資源
+                linkHtml = `<a href="${item.descriptionLink}" target="_blank" class="inline-flex items-center text-white bg-[#6C9A64] hover:bg-[#4A7A44] transition-colors font-bold text-sm px-4 py-2 rounded-full shadow-sm hover:shadow-md transform hover:scale-105">
+                                <i class="fa-solid fa-book-open mr-2"></i> 詳細內容
                             </a>`;
             }
 
-            // 內部 HTML 結構
+            // 內部 HTML 結構更新
             card.innerHTML = `
                 <div class="p-5 flex-grow">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded border border-yellow-300 font-sans tracking-widest">
-                            <i class="fa-solid fa-hashtag mr-1 text-gray-500"></i>${item.id}
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="bg-[#FFFAED] text-[#3B5A3E] text-xs font-black px-3 py-1 rounded-full border-2 border-[#D5EFCE] font-sans tracking-widest shadow-sm">
+                            # ${item.id}
                         </span>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800 mt-2 mb-3 leading-tight line-clamp-2" title="${item.name}">${item.name}</h3>
+                    <h3 class="text-2xl font-black text-[#3B5A3E] mt-1 mb-3 leading-tight line-clamp-2 font-['Nunito']" title="${item.name}">${item.name}</h3>
                     
-                    <div class="text-sm text-gray-600 mb-4 bg-gray-50 p-3 rounded border border-gray-100 h-20 overflow-y-auto font-sans">
-                        <span class="font-semibold text-gray-500 block mb-1">說明：</span>
+                    <div class="text-sm text-[#5C8C56] mb-4 bg-white/60 p-3 rounded-lg border border-[#D5EFCE] h-24 overflow-y-auto font-medium shadow-inner">
                         ${noteText}
                     </div>
                 </div>
                 
-                <div class="bg-gray-100 p-4 border-t border-gray-200 flex justify-between items-center">
+                <div class="bg-[#F2E8D5]/50 p-4 border-t border-black/5 flex justify-between items-center rounded-b-md">
                     ${linkHtml}
-                    <button onclick="copyToClipboard('${item.id}')" class="text-gray-500 hover:text-gray-800 p-2 rounded-full hover:bg-gray-200 transition-colors" title="複製登錄號">
-                        <i class="fa-regular fa-copy"></i>
+                    <button onclick="copyToClipboard('${item.id}')" class="text-[#CC4B40] hover:text-white hover:bg-[#CC4B40] w-10 h-10 flex items-center justify-center rounded-full transition-all shadow-sm hover:shadow-md" title="複製登錄號">
+                        <i class="fa-regular fa-copy text-lg"></i>
                     </button>
                 </div>
             `;
@@ -396,7 +393,7 @@
          * 複製文字到剪貼簿
          */
         function copyToClipboard(text) {
-            // 使用較舊但也較廣泛支援的方法 (因 iFrame 限制可能無法使用 navigator.clipboard)
+            // 使用較舊但也較廣泛支援的方法
             const textArea = document.createElement("textarea");
             textArea.value = text;
             
@@ -412,15 +409,13 @@
             try {
                 const successful = document.execCommand('copy');
                 if(successful) {
-                    // 可以加入一個簡易的提示效果，這裡使用改變文字顏色代替 alert
-                    const originalText = resultMessage.textContent;
-                    resultMessage.innerHTML = `<span class="text-green-600"><i class="fa-solid fa-check mr-2"></i>已複製登錄號: ${text}</span>`;
+                    // 成功複製的提示
+                    const originalText = resultMessage.innerHTML;
+                    resultMessage.innerHTML = `<span class="text-[#CC4B40] bg-white px-6 py-2 rounded-full shadow-md"><i class="fa-solid fa-check-circle mr-2"></i>已複製: ${text}</span>`;
                     resultMessage.classList.remove('hidden');
                     setTimeout(() => {
-                         resultMessage.textContent = originalText;
+                         resultMessage.innerHTML = originalText;
                     }, 2000);
-                } else {
-                    console.error('Fallback: Oops, unable to copy');
                 }
             } catch (err) {
                 console.error('Fallback: Oops, unable to copy', err);
@@ -428,6 +423,8 @@
 
             document.body.removeChild(textArea);
         }
+
+        // 頁面載入時自動執行
 
         // 頁面載入時自動執行一次空查詢，列出所有書箱
         window.addEventListener('DOMContentLoaded', () => {
