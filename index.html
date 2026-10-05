@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>長安書箱資源查詢系統</title>
+    <title>長安國小書箱資源查詢系統 - Book World</title>
     <!-- 使用 Tailwind CSS 進行樣式設計 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 使用 FontAwesome 載入圖示 -->
@@ -218,6 +218,10 @@
         <p class="subtitle-text text-base md:text-xl mt-1 tracking-wider font-semibold">
             輸入書箱名稱或登錄號來尋找您需要的資源
         </p>
+        <!-- 這是新增的圖書館連結 -->
+        <a href="https://read.moe.edu.tw/193661/library" target="_blank" class="mt-4 text-[#B06B1A] hover:text-[#CC4B40] font-bold text-xl md:text-2xl border-b-[3px] border-[#B06B1A] hover:border-[#CC4B40] pb-1 transition-colors flex items-center gap-2">
+            長安圖書系統 <i class="fa-solid fa-arrow-up-right-from-square text-lg md:text-xl"></i>
+        </a>
     </header>
 
     <div class="w-full max-w-2xl mb-8 relative z-30">
@@ -273,7 +277,7 @@
         
         let allResults = [];
         let currentPage = 1;
-        const itemsPerPage = 12;
+        const itemsPerPage = 10;
         let currentQuery = '';
 
         // DOM 元素宣告
